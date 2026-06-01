@@ -9,6 +9,13 @@ jobs:
   run-checks:
     runs-on: ubuntu-latest
     steps:
+      - name: Show trigger context
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch ref: ${{ github.ref }}"
+          echo "Workflow run number: ${{ github.run_number }}"
+
       - name: Trigger SignalNest cron endpoint
         env:
           SIGNALNEST_CRON_URL: ${{ secrets.SIGNALNEST_CRON_URL }}

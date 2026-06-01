@@ -105,3 +105,11 @@ When testing is done, set it back to:
 ```bash
 SIGNALNEST_NOTIFY_MODE=changes
 ```
+
+If you also want scheduled cron runs to execute every enabled job even when it is not due yet, set:
+
+```bash
+SIGNALNEST_CRON_FORCE_RUN=true
+```
+
+This is useful only for testing. In normal use, keep it `false` so jobs respect their configured intervals.

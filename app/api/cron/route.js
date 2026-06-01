@@ -18,13 +18,19 @@ async function executeCron(request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const results = await runDueJobs();
+  const force = request.nextUrl.searchParams.get("force") === "1";
+  const results = await runDueJobs({ force });
   return Response.json({
     ok: true,
     processedAt: results.processedAt,
     notificationMode: results.notificationMode,
-    ran: results.results.length,
-    results: results.results
+    force: results.force,
+    totalJobs: results.totalJobs,
+    enabledJobs: results.enabledJobs,
+    ran: results.ranCount,
+    skipped: results.skippedCount,
+    results: results.results,
+    skippedDetails: results.skipped
   });
 }
 
