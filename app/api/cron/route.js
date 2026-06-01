@@ -1,4 +1,5 @@
 import { runDueJobs } from "@/lib/jobs";
+import { recordSchedulerHeartbeat } from "@/lib/scheduler-state";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,6 +21,14 @@ async function executeCron(request) {
 
   const force = request.nextUrl.searchParams.get("force") === "1";
   const results = await runDueJobs({ force });
+  await recordSchedulerHeartbeat({
+    source: request.headers.get("user-agent") ?? "unknown",
+    lastHitAt: new Date().toISOString(),
+    lastProcessedAt: results.processedAt,
+    lastStatus: "ok",
+    lastRanCount: results.ranCount,
+    lastSkippedCount: results.skippedCount
+  });
   return Response.json({
     ok: true,
     processedAt: results.processedAt,
