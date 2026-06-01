@@ -10,6 +10,8 @@ import { listJobs } from "@/lib/jobs";
 import { providers } from "@/lib/providers";
 import { getStorageBackendLabel } from "@/lib/repository";
 
+export const dynamic = "force-dynamic";
+
 function formatTimestamp(value) {
   if (!value) {
     return "Never";

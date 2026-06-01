@@ -7,16 +7,65 @@ import { getFirebaseMessagingClient, isFirebaseWebConfigured } from "@/lib/fireb
 const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
 
 export function PushNotificationCard() {
-  const [permission, setPermission] = useState(
-    typeof window === "undefined" || !("Notification" in window)
-      ? "unsupported"
-      : Notification.permission
-  );
+  const [permission, setPermission] = useState("default");
   const [status, setStatus] = useState("idle");
   const [detail, setDetail] = useState("Browser push is not enabled yet.");
 
   useEffect(() => {
     let unsubscribe = null;
+
+    if (!("Notification" in window)) {
+      setPermission("unsupported");
+      setStatus("error");
+      setDetail("This browser does not support notifications.");
+      return;
+    }
+
+    setPermission(Notification.permission);
+
+    async function hydrateCurrentRegistration() {
+      if (Notification.permission !== "granted") {
+        return;
+      }
+
+      if (!isFirebaseWebConfigured() || !vapidKey) {
+        return;
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        const messaging = await getFirebaseMessagingClient();
+        if (!messaging) {
+          return;
+        }
+
+        const token = await getToken(messaging, {
+          vapidKey,
+          serviceWorkerRegistration: registration
+        });
+
+        if (token) {
+          await fetch("/api/push/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              token,
+              permission: Notification.permission,
+              userAgent: navigator.userAgent,
+              platform: navigator.platform,
+              locale: navigator.language
+            })
+          });
+
+          setStatus("ready");
+          setDetail("This browser is already registered for SignalNest push alerts.");
+        }
+      } catch {
+        // Ignore hydration issues and let the user retry manually.
+      }
+    }
 
     async function attachForegroundListener() {
       const messaging = await getFirebaseMessagingClient();
@@ -33,6 +82,7 @@ export function PushNotificationCard() {
       });
     }
 
+    hydrateCurrentRegistration();
     attachForegroundListener();
 
     return () => {
