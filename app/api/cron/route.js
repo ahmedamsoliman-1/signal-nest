@@ -20,8 +20,11 @@ async function executeCron(request) {
 
   const results = await runDueJobs();
   return Response.json({
-    ran: results.length,
-    results
+    ok: true,
+    processedAt: results.processedAt,
+    notificationMode: results.notificationMode,
+    ran: results.results.length,
+    results: results.results
   });
 }
 

@@ -20,7 +20,6 @@ Instead of building a one-off script, this version introduces:
 
 ```bash
 npm install
-npx playwright install chromium
 ```
 
 ## Run locally
@@ -88,3 +87,21 @@ CRON_SECRET=the-same-secret-you-set-on-vercel
 ```
 
 The workflow file is [signalnest-cron.yml](/Users/ahmedsoliman/Desktop/Repos/Playground/pass-finder/.github/workflows/signalnest-cron.yml), and it triggers the deployed cron endpoint every 5 minutes.
+
+## Notification test mode
+
+By default, SignalNest only sends notifications when a monitor changes state or becomes available.
+
+If you want to verify the full pipeline every 5 minutes, set:
+
+```bash
+SIGNALNEST_NOTIFY_MODE=always
+```
+
+This makes every scheduled run notify, even if the result did not change.
+
+When testing is done, set it back to:
+
+```bash
+SIGNALNEST_NOTIFY_MODE=changes
+```
