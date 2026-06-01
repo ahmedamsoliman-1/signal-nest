@@ -1,0 +1,21 @@
+{
+  "name": "pass-finder",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SignalNest, a generic status-monitoring platform for slow-moving service portals.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "jobs:due": "node scripts/run-due-jobs.mjs"
+  },
+  "dependencies": {
+    "firebase": "^12.1.0",
+    "firebase-admin": "^13.5.0",
+    "next": "^15.5.2",
+    "playwright": "^1.54.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  }
+}
