@@ -10,6 +10,7 @@ import { listJobs } from "@/lib/jobs";
 import { providers } from "@/lib/providers";
 import { getStorageBackendLabel } from "@/lib/repository";
 import { getNotificationMode } from "@/lib/runtime-config";
+import { getSchedulerState } from "@/lib/scheduler-state";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +94,7 @@ export default async function HomePage() {
   const providerCount = providers.length;
   const backend = getStorageBackendLabel();
   const notificationMode = getNotificationMode();
+  const schedulerState = await getSchedulerState();
 
   return (
     <main className="shell">
@@ -113,6 +115,11 @@ export default async function HomePage() {
             <Kpi label="Available" value={String(availableCount)} caption="ready for pickup" />
             <Kpi label="Backend" value={backend} caption="persistence layer" />
             <Kpi label="Notify mode" value={notificationMode} caption="changes or always" />
+            <Kpi
+              label="Last cron hit"
+              value={schedulerState.lastHitAt ? formatTimestamp(schedulerState.lastHitAt) : "Never"}
+              caption="external scheduler heartbeat"
+            />
           </div>
         </div>
 
@@ -196,6 +203,23 @@ export default async function HomePage() {
           <div className="panel panel-architecture">
             <div className="panel-head">
               <div>
+                <p className="eyebrow">Scheduler</p>
+                <h2>External cron status</h2>
+              </div>
+              <Pill tone="ink">cron-job.org ready</Pill>
+            </div>
+
+            <ul className="check-list">
+              <li>Scheduler type: {schedulerState.schedulerType}</li>
+              <li>Last hit: {schedulerState.lastHitAt ? formatTimestamp(schedulerState.lastHitAt) : "Never"}</li>
+              <li>Last processed run count: {String(schedulerState.lastRanCount ?? 0)}</li>
+              <li>Last skipped count: {String(schedulerState.lastSkippedCount ?? 0)}</li>
+            </ul>
+          </div>
+
+          <div className="panel panel-architecture">
+            <div className="panel-head">
+              <div>
                 <p className="eyebrow">Platform Health</p>
                 <h2>What changed</h2>
               </div>
@@ -208,6 +232,7 @@ export default async function HomePage() {
               <li>Push alerts can be delivered to registered browsers through Firebase Cloud Messaging.</li>
               <li>Firestore backs jobs, logs, and browser subscriptions when Firebase is configured.</li>
               <li>Set `SIGNALNEST_NOTIFY_MODE=always` temporarily if you want a push on every run for testing.</li>
+              <li>Use cron-job.org or another external scheduler to call `/api/cron` every 5 minutes.</li>
             </ul>
           </div>
         </div>
