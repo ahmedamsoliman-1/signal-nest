@@ -70,9 +70,9 @@ NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 
 The browser must visit the app once and allow notifications. SignalNest then stores the push token and sends FCM alerts when a monitor changes.
 
-## Vercel cron
+## Scheduled checks with GitHub Actions
 
-The repo includes `vercel.json` with a `*/5 * * * *` cron entry for `/api/cron`.
+Vercel Hobby does not allow every-5-minute cron schedules, so this repo uses GitHub Actions instead.
 
 Add this environment variable on Vercel:
 
@@ -80,6 +80,11 @@ Add this environment variable on Vercel:
 CRON_SECRET=some-random-secret
 ```
 
-Vercel will send it as an `Authorization` header to the cron route.
+Then add these GitHub repository secrets:
 
-Note: Vercel's current cron limits are plan-dependent. A true every-5-minute schedule requires a plan that supports per-minute cron frequency.
+```bash
+SIGNALNEST_CRON_URL=https://your-app.vercel.app/api/cron
+CRON_SECRET=the-same-secret-you-set-on-vercel
+```
+
+The workflow file is [signalnest-cron.yml](/Users/ahmedsoliman/Desktop/Repos/Playground/pass-finder/.github/workflows/signalnest-cron.yml), and it triggers the deployed cron endpoint every 5 minutes.
