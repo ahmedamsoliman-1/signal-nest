@@ -9,6 +9,7 @@ import { BRAND, PROVIDER_SPOTLIGHT } from "@/lib/branding";
 import { listJobs } from "@/lib/jobs";
 import { providers } from "@/lib/providers";
 import { getStorageBackendLabel } from "@/lib/repository";
+import { getNotificationMode } from "@/lib/runtime-config";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +79,7 @@ function LogRow({ run }) {
         <span>{formatDuration(run.durationMs)}</span>
         <span>{run.changed ? "changed" : "same state"}</span>
         <span>{run.notified ? "notified" : "quiet"}</span>
+        <span>{run.notificationReason ?? "n/a"}</span>
       </div>
     </li>
   );
@@ -90,6 +92,7 @@ export default async function HomePage() {
   const availableCount = jobs.filter((job) => job.lastResult?.status === "available").length;
   const providerCount = providers.length;
   const backend = getStorageBackendLabel();
+  const notificationMode = getNotificationMode();
 
   return (
     <main className="shell">
@@ -109,6 +112,7 @@ export default async function HomePage() {
             <Kpi label="Running now" value={String(runningCount)} caption="live executions" />
             <Kpi label="Available" value={String(availableCount)} caption="ready for pickup" />
             <Kpi label="Backend" value={backend} caption="persistence layer" />
+            <Kpi label="Notify mode" value={notificationMode} caption="changes or always" />
           </div>
         </div>
 
@@ -203,6 +207,7 @@ export default async function HomePage() {
               <li>Each job stores run timestamps, duration, current activity state, and recent logs.</li>
               <li>Push alerts can be delivered to registered browsers through Firebase Cloud Messaging.</li>
               <li>Firestore backs jobs, logs, and browser subscriptions when Firebase is configured.</li>
+              <li>Set `SIGNALNEST_NOTIFY_MODE=always` temporarily if you want a push on every run for testing.</li>
             </ul>
           </div>
         </div>

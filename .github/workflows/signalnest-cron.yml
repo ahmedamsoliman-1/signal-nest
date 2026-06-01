@@ -14,6 +14,8 @@ jobs:
           SIGNALNEST_CRON_URL: ${{ secrets.SIGNALNEST_CRON_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
+          echo "SignalNest cron started at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
           if [ -z "$SIGNALNEST_CRON_URL" ]; then
             echo "Missing SIGNALNEST_CRON_URL secret"
             exit 1
@@ -24,6 +26,9 @@ jobs:
             exit 1
           fi
 
-          curl --fail --show-error --silent \
+          RESPONSE=$(curl --fail --show-error --silent \
             -H "Authorization: Bearer $CRON_SECRET" \
-            "$SIGNALNEST_CRON_URL"
+            "$SIGNALNEST_CRON_URL")
+
+          echo "$RESPONSE"
+          echo "SignalNest cron finished at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
