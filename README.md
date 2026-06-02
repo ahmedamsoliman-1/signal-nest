@@ -114,3 +114,20 @@ SIGNALNEST_CRON_FORCE_RUN=true
 ```
 
 This is useful only for testing. In normal use, keep it `false` so jobs respect their configured intervals.
+
+## Repeat reminder interval
+
+If you want SignalNest to stay quiet unless something changes, keep:
+
+```bash
+SIGNALNEST_NOTIFICATION_REMINDER_HOURS=0
+```
+
+If you want an unchanged state to remind you on a slower cadence, set a positive number of hours:
+
+```bash
+SIGNALNEST_NOTIFICATION_REMINDER_HOURS=4
+```
+
+With that value, SignalNest will still notify immediately on a real change, but it can also send
+one reminder every 4 hours for the same unchanged state.
